@@ -1,0 +1,11 @@
+*.pyd
+*.pyc
+*.c
+
+myawesomelib.egg-info/
+__pycache__/
+emus.pytest_cache/
+build/
+dist/
+
+.idea/
