@@ -2,7 +2,8 @@ Cython Project Template
 
 ---
 
-Creating long-term Cython projects can be laborious, especially when it comes to writing a setup.py file.
+Creating long-term Cython projects can be laborious, especially when it comes to writing a setup.py file
+with NumPy support.
 This repository hosts a general-purpose setup.py file that allows arbitrary project structures and
 hierarchies, as well as code template.
 It allows you to:
