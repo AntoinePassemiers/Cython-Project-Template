@@ -14,6 +14,8 @@ from numpy.distutils.core import setup as np_setup
 # Project-dependant variable
 SOURCE_FOLDER = 'myawesomelib'
 
+# Allowed source file extensions
+ALLOWED_EXTENSIONS = {'.py', '.c', '.cpp'}
 
 # Look for Cython source files
 source_filepaths = [match for filepath in os.walk(SOURCE_FOLDER) \
@@ -37,8 +39,6 @@ GOT_BUILD_CMD = (sys.argv[1] in {'install', 'build', 'build_ext'})
 if GOT_BUILD_CMD:
 
     # Remove __init__.py file if present in root folder.
-    # This is to prevent cython from generating inappropriate variable names
-    # (because it is based on a relative path)
     init_path = os.path.join(os.path.realpath(__file__), '../__init__.py')
     if os.path.isfile(init_path):
         os.remove(init_path)
@@ -64,7 +64,7 @@ for x in os.walk(SOURCE_FOLDER):
             rel_filepath = os.path.join(sub_folder, filename)
         else:
             rel_filepath = filename
-        if os.path.splitext(rel_filepath)[1] in ['.py', '.c'] and '__init__' not in rel_filepath:
+        if os.path.splitext(rel_filepath)[1] in ALLOWED_EXTENSIONS and '__init__' not in rel_filepath:
             module_name = os.path.splitext(rel_filepath)[0].replace('\\', '.').replace('/', '.')
             if not 'setup' in module_name:
                 source_files.append(([rel_filepath], module_name))
@@ -74,13 +74,18 @@ for x in os.walk(SOURCE_FOLDER):
 extra_compile_args = list()
 libraries = ['m'] if os.name == 'posix' else list()
 include_dirs = [np.get_include()]
-config = Configuration(SOURCE_FOLDER, '', '')
+config = Configuration(
+        package_name=SOURCE_FOLDER,
+        parent_name=None,
+        package_path=SOURCE_FOLDER,
+        top_path=SOURCE_FOLDER)
 for sub_package in sub_packages:
     config.add_subpackage(sub_package)
 for sources, extension_name in source_files:
     sources = [os.path.join(SOURCE_FOLDER, source) for source in sources]
+    print('SOURCES', extension_name, sources)
     config.add_extension(
-        extension_name, 
+        extension_name,
         sources=sources,
         include_dirs=include_dirs+[SOURCE_FOLDER],
         libraries=libraries,
